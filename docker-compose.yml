@@ -1,0 +1,27 @@
+# PostgreSQL seul est conteneurise : le scraper tourne sur l'hote via uv et
+# vise le port publie ci-dessous. Voir README (section Architecture).
+services:
+  db:
+    image: postgres:16-alpine
+    container_name: bouquineo-db
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-bouquineo}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?POSTGRES_PASSWORD manquant - copiez .env.example vers .env}
+      POSTGRES_DB: ${POSTGRES_DB:-bouquineo}
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Joue le schema au PREMIER demarrage uniquement (volume vide).
+      # `init-db` le rejoue a la demande pour couvrir les autres cas.
+      - ./sql/schema.sql:/docker-entrypoint-initdb.d/01_schema.sql:ro
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-bouquineo} -d ${POSTGRES_DB:-bouquineo}"]
+      interval: 5s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
+    restart: unless-stopped
+
+volumes:
+  pgdata:

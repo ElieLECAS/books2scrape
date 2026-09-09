@@ -1,0 +1,24 @@
+# Python / uv
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Secrets
+.env
+
+# Donnees collectees (volumineuses, regenerables)
+data/
+logs/
+
+# Exports : on versionne le livrable final, pas les brouillons.
+# books.csv est un livrable EXIGE par le brief ("le jeu collecte exporte en
+# CSV ou JSON dans le repo") : il doit etre suivi explicitement.
+exports/*
+!exports/.gitkeep
+!exports/books.csv
+
+# OS
+Thumbs.db
+desktop.ini
